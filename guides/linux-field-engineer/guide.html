@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linux Field Engineer Guide</title>
+  <script src="/nav-component.js" defer></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;600;700&display=swap');
+    :root {
+      --bg:#0d0f0e; --bg2:#141716; --bg3:#1c1f1d; --bg4:#242826;
+      --green:#39d353; --green-dim:#1a5c28; --green-glow:rgba(57,211,83,0.08);
+      --amber:#f0b429; --red:#ff4d4d; --blue:#4da6ff; --purple:#c084fc;
+      --cyan:#22d3ee; --ink:#e8ede8; --ink2:#9db09d; --ink3:#5c6b5c;
+      --border:#1e2820; --border2:#2a332a;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--ink);font-family:'Space Grotesk',sans-serif;min-height:100vh;line-height:1.6;padding-top:48px;}
+    body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:100;}
+    
+    /* HEADER IMAGE */
+    .header-image{width:100%;display:block;margin:0 0 32px 0;padding-left:12px;}
+    
+    /* LAYOUT */
+    .layout{display:flex;min-height:100vh;}
+
+    /* SIDEBAR */
+    .sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border2);position:sticky;top:0;height:100vh;overflow-y:auto;flex-shrink:0;scrollbar-width:thin;scrollbar-color:var(--green-dim) transparent;}
+    .sidebar-header{padding:20px 16px 14px;border-bottom:1px solid var(--border2);}
+    .sidebar-header .prompt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);letter-spacing:1px;}
+    .sidebar-header h2{font-size:13px;font-weight:700;color:var(--ink);margin-top:4px;}
+    .sidebar-header p{font-size:10px;color:var(--ink3);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+    
+    /* BACK HOME LINK */
+    .back-home{display:block;padding:10px 16px;font-size:11px;color:var(--ink2);text-decoration:none;font-family:'JetBrains Mono',monospace;border-bottom:1px solid var(--border);transition:all 0.15s;}
+    .back-home:hover{color:var(--green);background:var(--green-glow);}
+    
+    .nav-group{padding:10px 0;border-bottom:1px solid var(--border);}
+    .nav-label{padding:4px 16px;font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:2px;font-family:'JetBrains Mono',monospace;}
+    .nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12px;color:var(--ink2);text-decoration:none;cursor:pointer;border-left:2px solid transparent;transition:all 0.1s;}
+    .nav-item:hover{background:var(--green-glow);color:var(--green);border-left-color:var(--green);}
+    .nav-icon{font-size:12px;width:16px;text-align:center;}
+
+    /* MAIN */
+    .main{flex:1;padding:40px 48px;max-width:960px;}
+    .page-header{margin-bottom:36px;padding-bottom:20px;border-bottom:1px solid var(--border2);}
+    .page-header .tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);letter-spacing:2px;text-transform:uppercase;}
+    .page-header h1{font-size:clamp(28px,4vw,44px);font-weight:700;color:var(--ink);letter-spacing:-1.5px;line-height:1.1;margin-top:6px;}
+    .page-header h1 em{color:var(--green);font-style:normal;}
+    .page-header p{font-size:12px;color:var(--ink2);margin-top:8px;font-family:'JetBrains Mono',monospace;}
+
+    /* TOPIC */
+    .topic{margin-bottom:52px;scroll-margin-top:20px;}
+    .topic-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border2);}
+    .topic-icon{font-size:20px;line-height:1;margin-top:2px;}
+    .topic-title{font-size:18px;font-weight:700;color:var(--green);letter-spacing:-0.5px;}
+    .topic-subtitle{font-size:11px;color:var(--ink3);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+
+    /* CONCEPT */
+    .concept{background:var(--bg2);border:1px solid var(--border2);border-left:3px solid var(--green-dim);border-radius:0 4px 4px 0;padding:14px 18px;margin-bottom:12px;}
+    .concept-label{font-size:9px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:2px;color:var(--green);margin-bottom:6px;}
+    .concept p{font-size:13px;color:var(--ink2);line-height:1.7;margin-bottom:6px;}
+    .concept p:last-child{margin-bottom:0;}
+    .analogy{background:var(--bg3);border-left:3px solid var(--amber);padding:9px 13px;font-size:12px;color:var(--amber);font-style:italic;margin-top:8px;border-radius:0 3px 3px 0;}
+
+    /* CODE */
+    .code-block{background:var(--bg2);border:1px solid var(--border2);border-radius:4px;margin-bottom:12px;position:relative;}
+    .code-block pre{padding:14px 18px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.85;}
+    .copy-btn{position:absolute;top:8px;right:10px;background:var(--bg4);border:1px solid var(--border2);color:var(--ink3);font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;cursor:pointer;transition:all 0.1s;}
+    .copy-btn:hover{color:var(--green);border-color:var(--green);}
+    .lc{color:var(--green);display:block;}
+    .ln{color:var(--ink3);}
+    .la{color:var(--amber);}
+    .lw{color:var(--red);}
+    .lg{color:var(--cyan);}
+    .lk{color:var(--cyan);}
+    .lv{color:var(--green);}
+
+    /* PANELS */
+    .panels{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+    @media(max-width:800px){.panels{grid-template-columns:1fr;}}
+    .panel{border:1px solid var(--border2);border-radius:4px;overflow:hidden;}
+    .panel-header{padding:7px 13px;font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;font-weight:600;}
+    .panel-diagnose .panel-header{background:rgba(34,211,238,0.08);color:var(--cyan);border-bottom:1px solid rgba(34,211,238,0.15);}
+    .panel-fix .panel-header{background:rgba(57,211,83,0.07);color:var(--green);border-bottom:1px solid var(--border2);}
+    .panel-solution{border:1px solid rgba(240,180,41,0.25);border-radius:4px;overflow:hidden;margin-bottom:10px;}
+    .panel-solution .panel-header{background:rgba(240,180,41,0.07);color:var(--amber);border-bottom:1px solid rgba(240,180,41,0.15);}
+    .panel pre{padding:11px 13px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.85;background:var(--bg2);overflow-x:auto;}
+
+    /* CALLOUTS */
+    .callout{padding:10px 14px;border-radius:4px;font-size:12px;font-family:'JetBrains Mono',monospace;margin-bottom:12px;line-height:1.6;}
+    .callout-tip{background:rgba(57,211,83,0.06);border-left:3px solid var(--green);color:var(--ink2);}
+    .callout-warn{background:rgba(255,77,77,0.06);border-left:3px solid var(--red);color:var(--ink2);}
+    .callout-amber{background:rgba(240,180,41,0.06);border-left:3px solid var(--amber);color:var(--ink2);}
+
+    /* QUICK START */
+    .qs-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px;}
+    .qs-item{background:var(--bg2);border:1px solid var(--border2);border-radius:3px;padding:9px 12px;display:flex;align-items:flex-start;gap:9px;cursor:pointer;transition:all 0.1s;position:relative;overflow:hidden;}
+    .qs-item:hover{border-color:var(--green);background:rgba(57,211,83,0.04);}
+    .qs-item.copied{border-color:var(--green);background:rgba(57,211,83,0.12);}
+    .qs-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);font-weight:700;flex-shrink:0;width:18px;margin-top:1px;}
+    .qs-cmd{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);display:block;word-break:break-all;line-height:1.5;}
+    .qs-note{font-size:10px;color:var(--ink3);margin-top:3px;display:block;}
+    .qs-copied-flash{position:absolute;top:0;right:0;background:var(--green);color:#0d0f0e;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:2px 8px;border-radius:0 3px 0 4px;opacity:0;transition:opacity 0.15s;pointer-events:none;}
+    .qs-item.copied .qs-copied-flash{opacity:1;}
+
+    .divider{height:1px;background:var(--border2);margin:44px 0;}
+    code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3);padding:2px 6px;border-radius:3px;color:var(--cyan);}
+    strong{color:var(--ink);}
+    em{color:var(--amber);font-style:normal;}
+
+    @media(max-width:700px){
+      .sidebar{display:none;}
+      .main{padding:20px 16px;}
+      .qs-grid{grid-template-columns:1fr;}
+      .header-image{margin-bottom:20px;}
+    }
+    
+    /* SEARCH */
+    .search-box{padding:12px 16px;border-bottom:1px solid var(--border);}
+    .search-box input{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--ink);padding:7px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;border-radius:3px;}
+    .search-box input:focus{outline:none;border-color:var(--green);background:var(--bg4);}
+    .search-box input::placeholder{color:var(--ink3);}
+    .search-nav{display:none;padding:8px 16px 12px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--ink3);}
+    .search-nav.active{display:flex;justify-content:space-between;align-items:center;}
+    .search-counter{flex:1;}
+    .search-buttons{display:flex;gap:4px;}
+    .search-btn{background:var(--bg3);border:1px solid var(--border2);color:var(--ink2);padding:3px 7px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;border-radius:2px;transition:all 0.1s;}
+    .search-btn:hover{border-color:var(--green);color:var(--green);}
+    .search-btn:disabled{opacity:0.3;cursor:not-allowed;}
+    mark{background:rgba(240,180,41,0.3);color:var(--ink);padding:1px 2px;}
+    mark.current-match{background:var(--amber);color:var(--bg);font-weight:600;padding:2px 4px;border-radius:2px;}
+    
+  </style>
+</head>
+<body>
+<div class="layout">
+
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="prompt">root@field:~#</div>
+    <h2>Field Engineer Guide</h2>
+    <p>concept · diagnose · fix · persist</p>
+  </div>
+  
+  <a href="/" class="back-home">← Home</a>
+  
+  <div class="search-box">
+    <input type="text" id="search-input" placeholder="Search guide..." onkeyup="searchContent()">
+  </div>
+  <div class="search-nav" id="search-nav">
+    <div class="search-counter" id="search-counter">0 of 0</div>
+    <div class="search-buttons">
+      <button class="search-btn" id="prev-btn" onclick="navigateSearch(-1)">↑</button>
+      <button class="search-btn" id="next-btn" onclick="navigateSearch(1)">↓</button>
+    </div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">First Steps</div>
+    <a class="nav-item" href="#quickstart"><span class="nav-icon">⚡</span>Quick Start (Top 10)</a>
+    <a class="nav-item" href="#methodology"><span class="nav-icon">🧭</span>5-Step Method</a>
+    <a class="nav-item" href="#history"><span class="nav-icon">📜</span>History &amp; Timeline</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Core Concepts</div>
+    <a class="nav-item" href="#inodes"><span class="nav-icon">📁</span>Inodes</a>
+    <a class="nav-item" href="#dmesg"><span class="nav-icon">🔔</span>dmesg</a>
+    <a class="nav-item" href="#ulimit"><span class="nav-icon">🔒</span>ulimit</a>
+    <a class="nav-item" href="#netplan"><span class="nav-icon">🌐</span>Netplan</a>
+    <a class="nav-item" href="#snap"><span class="nav-icon">📦</span>Snap</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Diagnose &amp; Fix</div>
+    <a class="nav-item" href="#network"><span class="nav-icon">🌐</span>Network</a>
+    <a class="nav-item" href="#disk"><span class="nav-icon">💾</span>Disk</a>
+    <a class="nav-item" href="#services"><span class="nav-icon">⚙️</span>Services</a>
+    <a class="nav-item" href="#permissions"><span class="nav-icon">🔑</span>Permissions</a>
+    <a class="nav-item" href="#performance"><span class="nav-icon">📊</span>Performance</a>
+    <a class="nav-item" href="#security"><span class="nav-icon">🔐</span>Security</a>
+    <a class="nav-item" href="#sneaky"><span class="nav-icon">👻</span>Sneaky Ones</a>
+  </div>
+</nav>
+
+<main class="main">
+  <img src="/assets/linux-cover.png" alt="Linux Field Engineer Diagnostic Guide" class="header-image">
+
+  <div class="page-header">
+    <div class="tag">// linux field engineer guide</div>
+    <h1>Debug. <em>Fix</em>. Persist.</h1>
+    <p>Ubuntu / RHEL / Debian · concept → diagnose → fix → survive reboot</p>
+  </div>
+
+  <!-- ═══ QUICK START ═══ -->
+  <div class="topic" id="quickstart">
+    <div class="topic-header">
+      <div class="topic-icon">⚡</div>
+      <div>
+        <div class="topic-title">Quick Start — First 10 Commands</div>
+        <div class="topic-subtitle">run these before anything else — read the crime scene first</div>
+      </div>
+    </div>
+    <div class="qs-grid">
+      <div class="qs-item" data-cmd='history && echo "" && sudo cat /root/.bash_history 2>/dev/null | tail -50'>
+        <div class="qs-num">01</div><div>
+          <span class="qs-cmd">history && echo "" && sudo cat /root/.bash_history 2>/dev/null | tail -50</span>
+          <span class="qs-note">← current user + root — BOTH histories</span>
+        </div>
+        <div class="qs-copied-flash">COPIED ✓</div>
+      </div>
+      <div class="qs-item" data-cmd='last -20 && echo "" && w'>
+        <div class="qs-num">02</div><div>
+          <span class="qs-cmd">last -20 && echo "" && w</span>
+          <span class="qs-note">← who was here, who is here NOW</span>
+        </div>
+        <div class="qs-copied-flash">COPIED ✓</div>
+      </div>
+      <div class="qs-item" data-cmd="ls -lt /etc/ | head -20">
+        <div class="qs-num">03</div><div>
+          <span class="qs-cmd">ls -lt /etc/ | head -20</span>
+          <span class="qs-note">← what configs changed recently</span>
+        </div>
+        <div class="qs-copied-flash">COPIED ✓</div>
+      </div>
+      <div class="qs-item" data-cmd='date && echo "" && timedatectl'>
+        <div class="qs-num">04</div><div>
+          <span class="qs-cmd">date && echo "" && timedatectl</span>
+          <span class="qs-note">← is the clock right? NTP synced?</span>
+        </div>
+        <div class="qs-copied-flash">COPIED ✓</div>
+      </div>
+      <div class="qs-item" data-cmd="systemctl --failed">
+        <div class="qs-num">05</div><div>
+          <span class="qs-cmd">systemctl --failed</span>
+          <span class="qs-note">← what services are broken now</span>
+        </div>
+        <div class="qs-copied-flash">COPIED ✓</div>
+      </div>
+      <div class="qs-item" data-cmd='sudo journalctl -xe --since "1 hour ago"'>
+        <div class="qs-num">06</div><div>
+          <span class="qs-cmd">sudo journalctl -xe --since "1 hour ago"</span>
+          <span class="qs-note">← what errors appeared recently</span>
+        </div>
+        <div class="qs-copied-flash">COPIED ✓</div>
+      </div>
+      <div class="qs-item" data-cmd='sudo dmesg -T | grep -E "error|fail|oom|killed" | tail -20'>
+        <div class="qs-num">07</div><div>
+          <span class="qs-cmd">sudo dmesg -T | grep -E "error|fail|oom|killed" | tail -20</span>
+          <span class="qs-note">← kernel/hardware/OOM events</span>
+        </div>
+        <div class="qs-copied-flash">COPIED ✓</div>
+      </div>
+      <div class="qs-item" data-cmd='df -h && echo "" && df -i'>
+        <div class="qs-num">08</div><div>
+          <span class="qs-cmd">df -h && echo "" && df -i</span>
+          <span class="qs-note">← disk space AND inodes (both fill)</span>
+        </div>
+        <div class="qs-copied-flash">COPIED ✓</div>
+      </div>
+      <div class="qs-item" data-cmd='free -h && echo "" && uptime'>
+        <div class="qs-num">09</div><div>
+          <span class="qs-cmd">free -h && echo "" && uptime</span>
+          <span class="qs-note">← memory pressure + load average</span>
+        </div>
+        <div class="qs-copied-flash">COPIED ✓</div>
+      </div>
+      <div class="qs-item" data-cmd='ss -tulpn && echo "" && ip addr && echo "" && ip route'>
+        <div class="qs-num">10</div><div>
+          <span class="qs-cmd">ss -tulpn && echo "" && ip addr && echo "" && ip route</span>
+          <span class="qs-note">← what's listening, full network state</span>
+        </div>
+        <div class="qs-copied-flash">COPIED ✓</div>
+      </div>
+    </div>
+    <div class="callout callout-amber">💡 Click any card to copy. Read history and timestamps <em>before</em> running diagnostics — they tell you who broke it and when. Everything else confirms your theory.</div>
+  </div>
+
+  <!-- ═══ METHODOLOGY ═══ -->
+  <div class="topic" id="methodology">
+    <div class="topic-header">
+      <div class="topic-icon">🧭</div>
+      <div>
+        <div class="topic-title">The 5-Step Method</div>
+        <div class="topic-subtitle">every fix · every time · no exceptions</div>
+      </div>
+    </div>
+    <div class="concept">
+      <div class="concept-label">The Golden Rule</div>
+      <p>Every fix follows the same five steps regardless of the problem. Skipping steps — especially <strong>Persist</strong> — is the most common mistake.</p>
+      <div class="analogy">A surgeon doesn't operate before reading the patient's chart. Read history before touching anything.</div>
+    </div>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyBlock(this)">copy</button>
+      <pre><span class="la">1. DIAGNOSE  </span>→ understand WHAT is broken and WHY
+<span class="la">2. VERIFY    </span>→ confirm your theory before touching anything
+<span class="la">3. FIX       </span>→ minimal change to resolve the root cause
+<span class="la">4. TEST      </span>→ confirm it actually works now
+<span class="la">5. PERSIST   </span>→ make the fix survive a reboot</pre>
+    </div>
+    <div class="callout callout-warn">⚠ Step 5 is what separates a field engineer from someone who hacks until it works. A fix that doesn't survive reboot is a time bomb.</div>
+  </div>
+
+  <!-- ═══ HISTORY ═══ -->
+  <div class="topic" id="history">
+    <div class="topic-header">
+      <div class="topic-icon">📜</div>
+      <div>
+        <div class="topic-title">History &amp; Timeline</div>
+        <div class="topic-subtitle">read the crime scene before touching anything</div>
+      </div>
+    </div>
+    <div class="concept">
+      <div class="concept-label">Why History First</div>
+      <p>Command history often tells you <em>exactly</em> what broke and who did it before running a single diagnostic. File modification timestamps tell you <em>when</em> things changed. Cross-reference with login history to know <em>who</em>.</p>
+      <div class="analogy">History is the CCTV footage. Check it before dusting for fingerprints — and remember there are multiple cameras: one per user, one for root, one for su sessions.</div>
+    </div>
+    <div class="callout callout-warn">⚠ <strong>The Root Trap:</strong> <code>history</code> only shows the <em>current user's session history</em>. Most critical changes happen as root — stored in a completely separate file. <code>sudo -i</code>, <code>su -</code>, and direct root SSH sessions each write to <code>/root/.bash_history</code>. Always check both. If they use <strong>zsh</strong>, the file is <code>.zsh_history</code> not <code>.bash_history</code>.</div>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyBlock(this)">copy</button>
+      <pre><span class="ln"># ── STEP 1: Current session (current user) ─────────────────────</span>
+<span class="lc">history</span>                                    <span class="ln"># session history (RAM only until written)</span>
+<span class="lc">history | grep -E "iptables|rm |chmod|chown|systemctl|apt|snap|curl|wget"</span>
+<span class="lc">cat ~/.bash_history</span>                        <span class="ln"># persisted history (survives logout)</span>
+<span class="lc">cat ~/.zsh_history 2>/dev/null</span>             <span class="ln"># if they use zsh</span>
+
+<span class="ln"># ── STEP 2: ROOT history (THE most important) ──────────────────</span>
+<span class="lc">sudo cat /root/.bash_history && echo "" && \</span>
+<span class="lc">sudo cat /root/.bash_history | tail -50 && echo "" && \</span>
+<span class="lc">sudo cat /root/.bash_history | grep -E "iptables|rm |chmod|systemctl|apt|snap|passwd|visudo" && echo "" && \</span>
+<span class="lc">sudo cat /root/.zsh_history 2>/dev/null</span>
+
+<span class="ln"># ── STEP 3: ALL users sweep ────────────────────────────────────</span>
+<span class="lc">ls /home/</span>                                  <span class="ln"># every user with a home dir</span>
+<span class="lc">for u in $(ls /home/); do echo "=== $u ==="; sudo cat /home/$u/.bash_history 2>/dev/null | tail -20; done</span>
+<span class="lc">for u in $(ls /home/); do sudo cat /home/$u/.zsh_history 2>/dev/null | tail -20; done</span>
+
+<span class="ln"># ── STEP 4: su - sessions (escalation trail) ───────────────────</span>
+<span class="ln"># su - creates a LOGIN shell → reads root's own history</span>
+<span class="ln"># Detect who escalated to root via su:</span>
+<span class="lc">sudo journalctl -u su --since "24 hours ago" 2>/dev/null && echo "" && \</span>
+<span class="lc">sudo grep "su\[" /var/log/auth.log | tail -20 && echo "" && \</span>
+<span class="lc">sudo grep "su\[" /var/log/secure | tail -20</span>
+
+<span class="ln"># ── STEP 5: journalctl as history proxy ────────────────────────</span>
+<span class="ln"># When history is cleared — journalctl still shows sudo invocations</span>
+<span class="lc">sudo journalctl | grep "COMMAND=" | tail -30</span>     <span class="ln"># every sudo command run</span>
+<span class="lc">sudo journalctl | grep "sudo:" | tail -30</span>
+
+<span class="ln"># ── STEP 6: File timeline — what changed? ──────────────────────</span>
+<span class="lc">ls -lt /etc/ | head -20</span>                   <span class="ln"># recently touched configs</span>
+<span class="lc">ls -lt /etc/systemd/system/ | head -10</span>    <span class="ln"># service file changes</span>
+<span class="lc">find /etc -newer /etc/passwd -type f</span>      <span class="ln"># everything modified since passwd</span>
+<span class="lc">stat /etc/nginx/nginx.conf</span>                <span class="ln"># exact modification timestamp</span>
+
+<span class="ln"># ── STEP 7: Login timeline ─────────────────────────────────────</span>
+<span class="lc">last -20 && echo "" && \</span>
+<span class="lc">sudo lastb -20 && echo "" && \</span>
+<span class="lc">w && echo "" && \</span>
+<span class="lc">sudo journalctl --since "2 hours ago" -xe && echo "" && \</span>
+<span class="lc">sudo dmesg -T | tail -30</span></pre>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 History Gotchas &amp; Solutions</div>
+      <pre><span class="lw">history is empty or suspiciously clean</span>
+<span class="lg">  → Someone ran: history -c && history -w  (cleared it)</span>
+<span class="lc">  sudo journalctl | grep "COMMAND=" | tail -50</span>   <span class="ln"># sudo trail survives clear</span>
+<span class="lc">  sudo grep "COMMAND" /var/log/auth.log | tail -50</span>
+<span class="lg">  → Clearing history is itself a red flag worth noting aloud</span>
+
+<span class="lw">.bash_history not writing (file exists but empty)</span>
+<span class="lg">  → HISTSIZE or HISTFILESIZE set to 0 in .bashrc or profile</span>
+<span class="lc">  grep -r "HISTSIZE\|HISTFILESIZE" /root/.bashrc /root/.bash_profile /etc/profile</span>
+<span class="lg">  → Or HISTFILE unset: unset HISTFILE prevents any write</span>
+<span class="lc">  env | grep HIST</span>
+
+<span class="lw">sudo -i vs sudo -s — different history files</span>
+<span class="lg">  sudo -i  → full login shell → root's ~/.bash_history (what you want to read)</span>
+<span class="lg">  sudo -s  → non-login shell  → may NOT write to /root/.bash_history</span>
+<span class="lg">  su -     → full login shell → root's ~/.bash_history (same as sudo -i)</span>
+<span class="lc">  → Always check /root/.bash_history regardless</span>
+
+<span class="lw">History timestamps not showing</span>
+<span class="lg">  → HISTTIMEFORMAT not set — history shows commands without dates</span>
+<span class="lc">  export HISTTIMEFORMAT="%d/%m/%y %T "</span>
+<span class="lc">  history | tail -20        </span><span class="ln"># now shows timestamps</span>
+<span class="lg">  → Persist: add to /etc/bash.bashrc or ~/.bashrc</span></pre>
+    </div>
+    <div class="callout callout-tip">✓ Forensic cross-reference: someone logged in at 14:23 + <code>/etc/nginx/nginx.conf</code> modified at 14:25 + root history shows <code>nano /etc/nginx/nginx.conf</code> at same time = who, what, when in under 2 minutes. Root history is almost always where the smoking gun lives.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ═══ INODES ═══ -->
+  <div class="topic" id="inodes">
+    <div class="topic-header">
+      <div class="topic-icon">📁</div>
+      <div>
+        <div class="topic-title">Inodes</div>
+        <div class="topic-subtitle">why your disk can be "full" with space remaining</div>
+      </div>
+    </div>
+    <div class="concept">
+      <div class="concept-label">What is an Inode?</div>
+      <p>Every file has two parts: the <strong>data</strong> (content) and the <strong>inode</strong> (metadata — permissions, owner, timestamps, data block pointers). The filesystem has a <em>fixed number of inodes allocated at creation time</em>. When exhausted, no new files can be created even with gigabytes free.</p>
+      <div class="analogy">Inodes are parking spaces in a car park. The car park can be huge (lots of disk space) but if every space is occupied by a bicycle (millions of tiny files), no new cars can park — even though there's plenty of room.</div>
+    </div>
+    <div class="panels">
+      <div class="panel panel-diagnose">
+        <div class="panel-header">🔍 Diagnose</div>
+        <pre><span class="lc">df -i</span>                   <span class="ln"># inode usage per mount</span>
+<span class="lc">df -h</span>                   <span class="ln"># disk space usage</span>
+<span class="ln"># IUse% at 100% = inode exhaustion</span>
+<span class="lc">find / -xdev -printf '%h\n' \
+  | sort | uniq -c \
+  | sort -rn | head -10</span>  <span class="ln"># dirs with most files</span></pre>
+      </div>
+      <div class="panel panel-fix">
+        <div class="panel-header">🔧 Fix</div>
+        <pre><span class="lc">sudo find /var/spool/postfix -type f -delete</span>
+<span class="lc">sudo find /tmp -type f -mtime +7 -delete</span>
+<span class="lc">sudo journalctl --vacuum-size=500M</span>
+<span class="ln"># Persist: add cleanup cron</span>
+<span class="lc">sudo crontab -e</span>
+<span class="lg">0 3 * * * find /tmp -type f -mtime +3 -delete</span></pre>
+      </div>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 Common Causes &amp; Solutions</div>
+      <pre><span class="lw">Postfix mail queue overflowing</span>
+<span class="lc">  sudo postsuper -d ALL deferred</span>
+<span class="lc">  sudo find /var/spool/postfix/deferred -type f -delete</span>
+
+<span class="lw">PHP session files accumulating</span>
+<span class="lc">  sudo find /var/lib/php/sessions -type f -mtime +1 -delete</span>
+
+<span class="lw">Millions of small log files</span>
+<span class="lc">  sudo find /var/log -name "*.gz" -mtime +30 -delete</span>
+<span class="lc">  sudo logrotate --force /etc/logrotate.conf</span>
+
+<span class="lw">Temp files from crashed processes</span>
+<span class="lc">  sudo find /tmp /var/tmp -type f -mtime +7 -delete</span></pre>
+    </div>
+    <div class="callout callout-warn">⚠ Cannot add inodes to an existing filesystem without reformatting. Prevention via crons and logrotate is the only real fix.</div>
+  </div>
+
+  <!-- ═══ DMESG ═══ -->
+  <div class="topic" id="dmesg">
+    <div class="topic-header">
+      <div class="topic-icon">🔔</div>
+      <div>
+        <div class="topic-title">dmesg</div>
+        <div class="topic-subtitle">the kernel's own log — the only place hardware failures live</div>
+      </div>
+    </div>
+    <div class="concept">
+      <div class="concept-label">What is dmesg?</div>
+      <p>The kernel ring buffer — a circular log maintained by the kernel itself, separate from application logs. The <em>only</em> place to find hardware failures, OOM kills, and AppArmor denials. Does not persist across reboots by default.</p>
+      <div class="analogy">dmesg is the aircraft black box. Regular logs tell you what the crew said. dmesg tells you what the plane's systems were actually doing.</div>
+    </div>
+    <div class="panels">
+      <div class="panel panel-diagnose">
+        <div class="panel-header">🔍 Diagnose</div>
+        <pre><span class="lc">sudo dmesg -T | tail -50</span>
+<span class="lc">sudo dmesg -T | grep -i error</span>
+<span class="lc">sudo dmesg -T | grep -i "oom\|killed"</span>
+<span class="lc">sudo dmesg -T | grep -i "fail\|hardware"</span>
+<span class="lc">sudo dmesg -T | grep -i "apparmor\|denied"</span></pre>
+      </div>
+      <div class="panel panel-fix">
+        <div class="panel-header">🔧 Fix by symptom</div>
+        <pre><span class="ln"># OOM → add swap + persist</span>
+<span class="lc">sudo fallocate -l 2G /swapfile && echo "" && \</span>
+<span class="lc">sudo chmod 600 /swapfile && echo "" && \</span>
+<span class="lc">sudo mkswap /swapfile && echo "" && \</span>
+<span class="lc">sudo swapon /swapfile && echo "" && \</span>
+<span class="lc">echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab && echo "" && \</span>
+<span class="lc">swapon --show</span>
+<span class="ln"># AppArmor → interactive fix</span>
+<span class="lc">sudo aa-logprof</span></pre>
+      </div>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 Common dmesg Findings &amp; Solutions</div>
+      <pre><span class="lw">"Out of memory: Kill process" — OOM killer fired</span>
+<span class="lg">  → A process consumed all RAM and was killed</span>
+<span class="lc">  free -h</span>
+<span class="lc">  cat /proc/meminfo | head -5</span>
+<span class="lc">  ps aux --sort=-%mem | head -10</span>
+<span class="lg">  Fix: add swap (above), tune vm.overcommit_memory, or upgrade RAM</span>
+<span class="lc">  echo "vm.overcommit_memory=2" | sudo tee -a /etc/sysctl.conf</span>
+
+<span class="lw">"EDAC MC0: CE memory read error" — RAM hardware fault</span>
+<span class="lg">  → Escalate to hardware team, don't fix in software</span>
+<span class="lc">  sudo dmidecode --type memory | grep -i "error\|bank"</span>
+
+<span class="lw">"I/O error, dev sda, sector XXXX" — disk failing</span>
+<span class="lg">  → Backup immediately, then replace disk</span>
+<span class="lc">  sudo smartctl -a /dev/sda     </span><span class="ln"># SMART health</span>
+<span class="lc">  sudo smartctl -t short /dev/sda</span>
+
+<span class="lw">"apparmor='DENIED' operation='open'" — policy blocking</span>
+<span class="lc">  sudo dmesg | grep apparmor | tail -10</span>
+<span class="lc">  sudo aa-logprof                </span><span class="ln"># interactive: approve legit ops</span>
+<span class="lc">  sudo aa-complain PROFILE       </span><span class="ln"># log only (debug mode)</span></pre>
+    </div>
+  </div>
+
+  <!-- ═══ ULIMIT ═══ -->
+  <div class="topic" id="ulimit">
+    <div class="topic-header">
+      <div class="topic-icon">🔒</div>
+      <div>
+        <div class="topic-title">ulimit</div>
+        <div class="topic-subtitle">per-process resource limits — fails silently when hit</div>
+      </div>
+    </div>
+    <div class="concept">
+      <div class="concept-label">What is ulimit?</div>
+      <p>Per-process resource limits enforced at kernel level. When hit, processes fail silently — no obvious error. Most critical: <strong>nofile</strong> (open file descriptors). Web servers, databases, Node.js apps hit this constantly at default limits.</p>
+      <div class="analogy">ulimit is a venue's fire code. Once at capacity, no new people enter — the venue doesn't announce it, it just silently turns people away at the door.</div>
+    </div>
+    <div class="panels">
+      <div class="panel panel-diagnose">
+        <div class="panel-header">🔍 Diagnose</div>
+        <pre><span class="lc">ulimit -a</span>             <span class="ln"># all limits for current user</span>
+<span class="lc">ulimit -n</span>             <span class="ln"># open files limit (key one)</span>
+<span class="lc">cat /proc/PID/limits</span>  <span class="ln"># limits for specific process</span>
+<span class="lc">sudo lsof | wc -l</span>    <span class="ln"># total open files system-wide</span>
+<span class="lc">sudo lsof -p PID | wc -l</span></pre>
+      </div>
+      <div class="panel panel-fix">
+        <div class="panel-header">🔧 Fix (systemd service)</div>
+        <pre><span class="lc">sudo systemctl edit nginx</span>
+<span class="ln"># Add in override file:</span>
+<span class="lg">[Service]
+LimitNOFILE=65536</span>
+<span class="lc">sudo systemctl daemon-reload</span>
+<span class="lc">sudo systemctl restart nginx</span>
+<span class="ln"># Persist globally: /etc/security/limits.conf</span>
+<span class="lg">nginx soft nofile 65536
+nginx hard nofile 65536</span></pre>
+      </div>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 Common ulimit Errors &amp; Solutions</div>
+      <pre><span class="lw">"Too many open files" in application logs</span>
+<span class="lg">  → nofile limit hit (default 1024 is tiny for servers)</span>
+<span class="lc">  cat /proc/$(pgrep nginx | head -1)/limits | grep "open files"</span>
+<span class="lc">  sudo systemctl edit nginx   </span><span class="ln"># add LimitNOFILE=65536</span>
+
+<span class="lw">"Cannot fork" / "Resource temporarily unavailable"</span>
+<span class="lg">  → nproc (max processes) limit hit</span>
+<span class="lc">  ulimit -u                   </span><span class="ln"># check max processes</span>
+<span class="lc">  echo "* soft nproc 65536" | sudo tee -a /etc/security/limits.conf</span>
+<span class="lc">  echo "* hard nproc 65536" | sudo tee -a /etc/security/limits.conf</span>
+
+<span class="lw">"Address already in use" after limit exhaustion</span>
+<span class="lg">  → Socket exhaustion / TIME_WAIT backlog</span>
+<span class="lc">  ss -s                        </span><span class="ln"># socket summary statistics</span>
+<span class="lc">  sudo sysctl -w net.ipv4.tcp_tw_reuse=1</span>
+<span class="lc">  echo "net.ipv4.tcp_tw_reuse=1" | sudo tee -a /etc/sysctl.conf</span></pre>
+    </div>
+  </div>
+
+  <!-- ═══ NETPLAN ═══ -->
+  <div class="topic" id="netplan">
+    <div class="topic-header">
+      <div class="topic-icon">🌐</div>
+      <div>
+        <div class="topic-title">Netplan</div>
+        <div class="topic-subtitle">Ubuntu's network config abstraction — YAML, not scripts</div>
+      </div>
+    </div>
+    <div class="concept">
+      <div class="concept-label">What is Netplan?</div>
+      <p>Ubuntu's network configuration layer since 17.10. Write YAML in <code>/etc/netplan/</code>, Netplan generates config for the renderer (systemd-networkd on servers, NetworkManager on desktop). <em>Indentation is critical</em> — YAML is whitespace-sensitive. One wrong space = no network.</p>
+      <div class="analogy">Netplan is an architect's blueprint. You describe what you want, the builder (systemd-networkd) constructs it. The safety net: <code>netplan try</code> auto-reverts after 120s if you don't confirm.</div>
+    </div>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copyBlock(this)">copy</button>
+      <pre><span class="ln"># Static IP — /etc/netplan/00-installer-config.yaml</span>
+<span class="lk">network:</span>
+  <span class="lk">version:</span> <span class="lv">2</span>
+  <span class="lk">renderer:</span> <span class="lv">networkd</span>
+  <span class="lk">ethernets:</span>
+    <span class="lk">ens3:</span>
+      <span class="lk">addresses:</span>
+        - <span class="lv">192.168.1.100/24</span>
+      <span class="lk">routes:</span>
+        - <span class="lk">to:</span> <span class="lv">default</span>
+          <span class="lk">via:</span> <span class="lv">192.168.1.1</span>
+      <span class="lk">nameservers:</span>
+        <span class="lk">addresses:</span> [<span class="lv">8.8.8.8</span>, <span class="lv">1.1.1.1</span>]</pre>
+    </div>
+    <div class="panels">
+      <div class="panel panel-diagnose">
+        <div class="panel-header">🔍 Diagnose</div>
+        <pre><span class="lc">sudo netplan --debug generate</span>
+<span class="ln"># shows parsing errors without applying</span>
+<span class="lc">networkctl status</span>
+<span class="lc">ip addr show</span>
+<span class="lc">cat /etc/netplan/*.yaml</span></pre>
+      </div>
+      <div class="panel panel-fix">
+        <div class="panel-header">🔧 Apply Safely</div>
+        <pre><span class="lc">sudo netplan try</span>
+<span class="ln"># Applies + auto-reverts in 120s
+# Type "yes" to confirm
+# NEVER use netplan apply over SSH
+# without netplan try first!</span>
+<span class="lc">sudo netplan apply</span>
+<span class="ln"># Only after try confirmed safe</span></pre>
+      </div>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 Common Netplan Errors &amp; Solutions</div>
+      <pre><span class="lw">"Invalid YAML" or config silently not applying</span>
+<span class="lg">  → Indentation error — use 2 spaces, NEVER tabs</span>
+<span class="lc">  sudo netplan --debug generate    </span><span class="ln"># shows exact error + line number</span>
+<span class="lc">  python3 -c "import yaml; yaml.safe_load(open('/etc/netplan/00-installer-config.yaml'))"</span>
+
+<span class="lw">Interface not coming up after apply</span>
+<span class="lg">  → Wrong interface name in YAML</span>
+<span class="lc">  ip link show                     </span><span class="ln"># get actual interface names</span>
+<span class="lc">  ls /sys/class/net/               </span><span class="ln"># all available interfaces</span>
+
+<span class="lw">Lost SSH after netplan apply (used apply not try)</span>
+<span class="lg">  → No auto-revert available — need console access</span>
+<span class="lc">  # From console: restore backup and reapply</span>
+<span class="lc">  sudo cp /etc/netplan/backup.yaml /etc/netplan/00-installer-config.yaml</span>
+<span class="lc">  sudo netplan apply</span>
+<span class="lg">  Prevention: always keep a backup before editing</span>
+<span class="lc">  sudo cp /etc/netplan/00-installer-config.yaml /etc/netplan/backup.yaml</span></pre>
+    </div>
+  </div>
+
+  <!-- ═══ SNAP ═══ -->
+  <div class="topic" id="snap">
+    <div class="topic-header">
+      <div class="topic-icon">📦</div>
+      <div>
+        <div class="topic-title">Snap Packages</div>
+        <div class="topic-subtitle">Ubuntu's app format — not apt, not docker — its own beast</div>
+      </div>
+    </div>
+    <div class="concept">
+      <div class="concept-label">What is Snap?</div>
+      <p>Snap bundles dependencies and runs in isolation (like Docker) but natively on the host without container overhead (like apt). Updates are atomic with automatic rollback on failure. Canonical controls the Snap Store — packages are cryptographically signed.</p>
+      <div class="analogy">Snap is a sealed lunchbox — everything inside is self-contained, cannot contaminate the rest of the kitchen, and if the food inside is bad, you throw it away and grab the previous day's sealed box automatically.</div>
+    </div>
+    <div class="callout callout-warn">⚠ <strong>The Data Path Trap:</strong> <code>/var/snap/name/current/</code> is a symlink that <em>changes</em> on revert. <code>/var/snap/name/common/</code> is revision-independent and <em>never changes</em>. Always check where app data lives <em>before</em> running <code>snap revert</code>. Reverting config stored in <code>current/</code> will silently revert your data too.</div>
+    <div class="panels">
+      <div class="panel panel-diagnose">
+        <div class="panel-header">🔍 Diagnose</div>
+        <pre><span class="lc">snap list</span>                 <span class="ln"># installed snaps + revision</span>
+<span class="lc">snap list --all</span>           <span class="ln"># all revisions installed</span>
+<span class="lc">snap info SNAPNAME</span>        <span class="ln"># channels, versions, publisher</span>
+<span class="lc">snap changes</span>              <span class="ln"># recent snap operations log</span>
+<span class="lc">snap logs SNAPNAME</span>        <span class="ln"># service logs (like journalctl)</span>
+<span class="lc">snap services</span>             <span class="ln"># all snap-managed services</span>
+<span class="lc">df -h | grep /dev/loop</span>   <span class="ln"># loop mounts (one per snap)</span></pre>
+      </div>
+      <div class="panel panel-fix">
+        <div class="panel-header">🔧 Fix / Manage</div>
+        <pre><span class="lc">sudo snap revert SNAPNAME</span>  <span class="ln"># roll back to previous rev</span>
+<span class="lc">sudo snap refresh SNAPNAME</span> <span class="ln"># manual update now</span>
+<span class="lc">sudo snap refresh --hold SNAPNAME</span> <span class="ln"># pause auto-updates</span>
+<span class="ln"># Restart a snap service</span>
+<span class="lc">sudo snap restart SNAPNAME</span>
+<span class="ln"># Check/set confinement</span>
+<span class="lc">snap connections SNAPNAME</span>  <span class="ln"># interface connections</span>
+<span class="lc">sudo snap connect SNAPNAME:interface</span></pre>
+      </div>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 Common Snap Issues &amp; Solutions</div>
+      <pre><span class="lw">Snap app can't access files / "Permission denied" from snap process</span>
+<span class="lg">  → AppArmor confinement blocking access — intentional security boundary</span>
+<span class="lc">  snap connections SNAPNAME</span>           <span class="ln"># see what interfaces are connected</span>
+<span class="lc">  sudo snap connect SNAPNAME:home</span>     <span class="ln"># grant home dir access</span>
+<span class="lc">  sudo snap connect SNAPNAME:removable-media</span>
+<span class="lg">  → Can also install with --devmode for unconfined (DEBUG ONLY)</span>
+<span class="lc">  sudo snap install SNAPNAME --devmode</span>
+
+<span class="lw">Snap update broke something — need to roll back</span>
+<span class="lc">  snap list --all SNAPNAME</span>             <span class="ln"># see available revisions</span>
+<span class="lc">  sudo snap revert SNAPNAME</span>            <span class="ln"># back to previous revision</span>
+<span class="lc">  sudo snap revert SNAPNAME --revision=REV</span>  <span class="ln"># specific revision</span>
+<span class="lg">  ⚠ Check if data is in current/ (will revert) or common/ (safe)</span>
+<span class="lc">  ls -la /var/snap/SNAPNAME/</span>          <span class="ln"># current= symlink, common= stable</span>
+
+<span class="lw">Too many /dev/loop mounts cluttering df output</span>
+<span class="lg">  → Normal — each snap revision = one squashfs loop mount</span>
+<span class="lc">  snap list --all | grep disabled</span>     <span class="ln"># old revisions taking space</span>
+<span class="lc">  sudo snap set system refresh.retain=2</span>  <span class="ln"># keep only 2 revisions</span>
+
+<span class="lw">Snap service not starting on boot</span>
+<span class="lc">  snap services SNAPNAME</span>
+<span class="lc">  sudo snap start --enable SNAPNAME.service</span>
+<span class="lg">  → Unlike systemctl, snap services use: snap start/stop/restart/logs</span>
+
+<span class="lw">Auto-update happened at bad time — broke production</span>
+<span class="lc">  sudo snap set system refresh.metered=hold</span>  <span class="ln"># pause all updates</span>
+<span class="lc">  sudo snap refresh --hold=72h SNAPNAME</span>      <span class="ln"># hold specific snap</span>
+<span class="lg">  → Long-term: use snap channels (stable/candidate/beta/edge)</span>
+<span class="lc">  sudo snap refresh SNAPNAME --channel=stable/stable</span></pre>
+    </div>
+    <div class="callout callout-amber">💡 Snap strengths: atomic rollback, AppArmor isolation, auto-updates, cryptographic trust chain. Snap weaknesses: 200-800ms slower startup, 3-4x larger disk footprint, harder to debug integration issues. Know the tradeoffs before recommending snap vs apt in customer environments.</div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="topic" id="network">
+    <div class="topic-header">
+      <div class="topic-icon">🌐</div>
+      <div>
+        <div class="topic-title">Network</div>
+        <div class="topic-subtitle">gateway · DNS · firewall · routing</div>
+      </div>
+    </div>
+    <div class="panels">
+      <div class="panel panel-diagnose">
+        <div class="panel-header">🔍 Diagnose</div>
+        <pre><span class="lc">ip addr show</span>             <span class="ln"># interfaces + IPs</span>
+<span class="lc">ip route show</span>            <span class="ln"># routing table</span>
+<span class="lc">ping -c3 8.8.8.8</span>        <span class="ln"># internet reachable?</span>
+<span class="lc">ping -c3 192.168.1.1</span>    <span class="ln"># gateway reachable?</span>
+<span class="lc">dig google.com</span>           <span class="ln"># DNS resolution working?</span>
+<span class="lc">cat /etc/resolv.conf</span>     <span class="ln"># DNS servers configured</span>
+<span class="lc">ss -tulpn</span>                <span class="ln"># open ports + processes</span></pre>
+      </div>
+      <div class="panel panel-fix">
+        <div class="panel-header">🔧 Fix</div>
+        <pre><span class="lc">sudo systemctl restart systemd-networkd</span>
+<span class="ln"># Fix DNS</span>
+<span class="lc">sudo resolvectl dns ens3 8.8.8.8 1.1.1.1</span>
+<span class="ln"># Check firewall</span>
+<span class="lc">sudo ufw status verbose</span>
+<span class="lc">sudo iptables -L -n -v</span></pre>
+      </div>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 Common Network Errors &amp; Solutions</div>
+      <pre><span class="lw">"Network unreachable" — ping to 8.8.8.8 fails</span>
+<span class="lc">  ip route show              </span><span class="ln"># is there a default route?</span>
+<span class="lc">  sudo ip route add default via 192.168.1.1 dev ens3</span>
+<span class="lc">  sudo netplan apply         </span><span class="ln"># persist via netplan config</span>
+
+<span class="lw">"Temporary failure in name resolution" — DNS broken</span>
+<span class="lc">  ping -c3 8.8.8.8           </span><span class="ln"># if this works = DNS, not network</span>
+<span class="lc">  sudo systemctl restart systemd-resolved</span>
+<span class="lc">  echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf</span>
+
+<span class="lw">Service running but port unreachable externally</span>
+<span class="lc">  sudo ufw allow 80/tcp && echo "" && \</span>
+<span class="lc">  sudo ufw allow 443/tcp && echo "" && \</span>
+<span class="lc">  sudo ufw reload && echo "" && \</span>
+<span class="lc">  ss -tulpn | grep :80</span>
+
+<span class="lw">Interface has IP but still no connectivity</span>
+<span class="lc">  sudo ip link set ens3 down && sudo ip link set ens3 up</span>   <span class="ln"># bounce (atomic)</span>
+<span class="lc">  sudo dhclient ens3         </span><span class="ln"># force DHCP lease renewal</span></pre>
+    </div>
+  </div>
+
+  <!-- ═══ DISK ═══ -->
+  <div class="topic" id="disk">
+    <div class="topic-header">
+      <div class="topic-icon">💾</div>
+      <div>
+        <div class="topic-title">Disk</div>
+        <div class="topic-subtitle">full disk · inode exhaustion · bad fstab · read-only filesystem</div>
+      </div>
+    </div>
+    <div class="panels">
+      <div class="panel panel-diagnose">
+        <div class="panel-header">🔍 Diagnose</div>
+        <pre><span class="lc">df -h</span>                    <span class="ln"># disk space</span>
+<span class="lc">df -i</span>                    <span class="ln"># inode usage</span>
+<span class="lc">du -sh /* 2>/dev/null | sort -rh | head -15</span>
+<span class="lc">lsblk</span>                    <span class="ln"># block devices</span>
+<span class="lc">cat /etc/fstab</span>           <span class="ln"># mount config</span>
+<span class="lc">sudo mount -a</span>            <span class="ln"># test fstab (safe)</span></pre>
+      </div>
+      <div class="panel panel-fix">
+        <div class="panel-header">🔧 Free Space Fast</div>
+        <pre><span class="lc">sudo journalctl --vacuum-size=500M && echo "" && \</span>
+<span class="lc">sudo apt autoremove && echo "" && \</span>
+<span class="lc">sudo apt clean && echo "" && \</span>
+<span class="lc">sudo find /var/log -name "*.gz" -delete</span>
+<span class="ln"># Fix bad fstab — use UUID not /dev/sdX</span>
+<span class="lc">blkid</span>                    <span class="ln"># get UUIDs</span>
+<span class="lc">sudo nano /etc/fstab</span></pre>
+      </div>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 Common Disk Errors &amp; Solutions</div>
+      <pre><span class="lw">"No space left on device" — disk full</span>
+<span class="lc">  du -sh /var/log/* | sort -rh | head -10  </span><span class="ln"># biggest dirs</span>
+<span class="lc">  sudo truncate -s 0 /var/log/syslog       </span><span class="ln"># zero a huge log</span>
+<span class="lc">  sudo journalctl --vacuum-time=7d</span>
+
+<span class="lw">System won't boot — bad /etc/fstab entry</span>
+<span class="lg">  → Boot to recovery mode → mount rw → fix fstab</span>
+<span class="lc">  sudo mount -o remount,rw /</span>
+<span class="lc">  sudo nano /etc/fstab         </span><span class="ln"># comment out bad line</span>
+<span class="lg">  ALWAYS use UUID=... not /dev/sdX (device names change on reboot)</span>
+<span class="lc">  blkid                        </span><span class="ln"># get correct UUIDs</span>
+
+<span class="lw">"Read-only filesystem" errors</span>
+<span class="lc">  sudo dmesg | grep -i "error\|readonly"   </span><span class="ln"># I/O errors = failing disk</span>
+<span class="lc">  sudo mount -o remount,rw /</span>
+<span class="lc">  sudo fsck /dev/sda1 -y       </span><span class="ln"># only when unmounted!</span></pre>
+    </div>
+    <div class="callout callout-warn">⚠ Never reference disks as <code>/dev/sda1</code> in fstab — device names change on reboot. Use <code>UUID=</code> from <code>blkid</code>. Wrong fstab = system won't boot.</div>
+  </div>
+
+  <!-- ═══ SERVICES ═══ -->
+  <div class="topic" id="services">
+    <div class="topic-header">
+      <div class="topic-icon">⚙️</div>
+      <div>
+        <div class="topic-title">Services</div>
+        <div class="topic-subtitle">failed units · bad config · masked services · port conflicts</div>
+      </div>
+    </div>
+    <div class="panels">
+      <div class="panel panel-diagnose">
+        <div class="panel-header">🔍 Diagnose</div>
+        <pre><span class="lc">systemctl --failed</span>           <span class="ln"># all failed units</span>
+<span class="lc">systemctl status nginx</span>       <span class="ln"># specific service</span>
+<span class="lc">journalctl -u nginx -xe</span>     <span class="ln"># service logs</span>
+<span class="lc">journalctl -u nginx --since "30 min ago"</span>
+<span class="lc">sudo nginx -t</span>                <span class="ln"># test config syntax</span>
+<span class="lc">systemctl is-enabled nginx</span>  <span class="ln"># starts on boot?</span></pre>
+      </div>
+      <div class="panel panel-fix">
+        <div class="panel-header">🔧 Fix</div>
+        <pre><span class="lc">sudo nano /etc/nginx/nginx.conf</span>
+<span class="lc">sudo nginx -t</span>                <span class="ln"># validate first!</span>
+<span class="lc">sudo systemctl start nginx</span>
+<span class="lc">sudo systemctl enable nginx</span>  <span class="ln"># persist on boot</span>
+<span class="ln"># If masked:</span>
+<span class="lc">sudo systemctl unmask nginx</span>
+<span class="lc">sudo systemctl enable --now nginx</span></pre>
+      </div>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 Common Service Errors &amp; Solutions</div>
+      <pre><span class="lw">"Failed to start" — Exit code 1 / status=1/FAILURE</span>
+<span class="lc">  journalctl -u servicename -xe --no-pager | tail -30</span>
+<span class="lg">  → The actual error is in those last 30 lines — read carefully</span>
+
+<span class="lw">"Unit is masked" — cannot start or enable</span>
+<span class="lg">  → Explicitly disabled by someone — unmask first</span>
+<span class="lc">  sudo systemctl unmask servicename</span>
+<span class="lc">  sudo systemctl enable --now servicename</span>
+
+<span class="lw">Service starts then immediately dies</span>
+<span class="lc">  journalctl -u servicename -f &amp;</span>  <span class="ln"># watch live</span>
+<span class="lc">  sudo /usr/sbin/nginx -g 'daemon off;'  </span><span class="ln"># run in foreground</span>
+<span class="lg">  → Usually: config error, missing file, permission issue, or port conflict</span>
+
+<span class="lw">"Address already in use" — port conflict</span>
+<span class="lc">  ss -tulpn | grep :80</span>
+<span class="lc">  sudo fuser -k 80/tcp           </span><span class="ln"># kill whatever is on port 80</span>
+
+<span class="lw">Service running but not starting on boot</span>
+<span class="lc">  sudo systemctl enable servicename</span>
+<span class="lc">  systemctl is-enabled servicename  </span><span class="ln"># must say "enabled"</span></pre>
+    </div>
+  </div>
+
+  <!-- ═══ PERMISSIONS ═══ -->
+  <div class="topic" id="permissions">
+    <div class="topic-header">
+      <div class="topic-icon">🔑</div>
+      <div>
+        <div class="topic-title">Permissions</div>
+        <div class="topic-subtitle">sudo broken · wrong ownership · SSH key auth · PATH issues</div>
+      </div>
+    </div>
+    <div class="panels">
+      <div class="panel panel-diagnose">
+        <div class="panel-header">🔍 Diagnose</div>
+        <pre><span class="lc">sudo -l</span>                <span class="ln"># what can this user sudo?</span>
+<span class="lc">id && groups</span>           <span class="ln"># user + group membership</span>
+<span class="lc">ls -la /path/to/file</span>  <span class="ln"># permissions + owner</span>
+<span class="lc">stat /path/to/file</span>    <span class="ln"># detailed metadata</span>
+<span class="lc">echo $PATH</span>            <span class="ln"># PATH broken?</span>
+<span class="lc">visudo -c</span>             <span class="ln"># validate sudoers syntax</span></pre>
+      </div>
+      <div class="panel panel-fix">
+        <div class="panel-header">🔧 Fix</div>
+        <pre><span class="lc">sudo chown www-data:www-data /var/www -R</span>
+<span class="lc">sudo chmod 644 /etc/nginx/nginx.conf</span>
+<span class="ln"># Add user to sudo group</span>
+<span class="lc">sudo usermod -aG sudo username</span>
+<span class="ln"># Always edit sudoers via visudo</span>
+<span class="lc">sudo visudo</span></pre>
+      </div>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 Common Permission Errors &amp; Solutions</div>
+      <pre><span class="lw">"sudo: command not found" or "user is not in sudoers"</span>
+<span class="lc">  groups                           </span><span class="ln"># is user in sudo group?</span>
+<span class="lc">  sudo usermod -aG sudo username</span>
+<span class="lg">  → Must log out and back in for group change to take effect</span>
+
+<span class="lw">"Permission denied" on file/directory operation</span>
+<span class="lc">  ls -la /path/to/file             </span><span class="ln"># check owner and mode bits</span>
+<span class="lc">  sudo chown $USER:$USER /path</span>
+<span class="lc">  sudo chmod 644 /path/to/file     </span><span class="ln"># files: 644, dirs: 755</span>
+
+<span class="lw">Sudoers broken — completely locked out of sudo</span>
+<span class="lg">  → Boot to recovery/single-user mode</span>
+<span class="lc">  sudo mount -o remount,rw /</span>
+<span class="lc">  visudo                           </span><span class="ln"># NEVER edit /etc/sudoers directly</span>
+<span class="lc">  visudo -c                        </span><span class="ln"># validate syntax before saving</span>
+
+<span class="lw">"Permission denied (publickey)" — SSH key auth failing</span>
+<span class="lc">  ls -la ~/.ssh/                   </span><span class="ln"># .ssh=700, authorized_keys=600</span>
+<span class="lc">  chmod 700 ~/.ssh</span>
+<span class="lc">  chmod 600 ~/.ssh/authorized_keys</span>
+<span class="lc">  chown $USER:$USER ~/.ssh -R</span></pre>
+    </div>
+  </div>
+
+  <!-- ═══ PERFORMANCE ═══ -->
+  <div class="topic" id="performance">
+    <div class="topic-header">
+      <div class="topic-icon">📊</div>
+      <div>
+        <div class="topic-title">Performance</div>
+        <div class="topic-subtitle">load average · memory pressure · I/O wait · CPU hogs</div>
+      </div>
+    </div>
+    <div class="concept">
+      <div class="concept-label">Reading Load Average</div>
+      <p>Three numbers: <strong>1min / 5min / 15min</strong>. A value equal to your CPU count = 100% utilised. Higher = processes queuing. The trend matters — rising means the problem is growing, falling means it's recovering.</p>
+      <div class="analogy">Load average is a motorway traffic report. CPU count = number of lanes. Load 4.0 on a 4-core box = every lane full but moving. Load 8.0 = gridlock with a queue building.</div>
+    </div>
+    <div class="panels">
+      <div class="panel panel-diagnose">
+        <div class="panel-header">🔍 Diagnose</div>
+        <pre><span class="lc">uptime</span>                <span class="ln"># load avg 1/5/15min</span>
+<span class="lc">nproc</span>                 <span class="ln"># CPU core count</span>
+<span class="lc">top</span>                   <span class="ln"># live — press 1 for per-core</span>
+<span class="lc">ps aux --sort=-%cpu | head -10</span>
+<span class="lc">ps aux --sort=-%mem | head -10</span>
+<span class="lc">free -h</span>              <span class="ln"># memory + swap</span>
+<span class="lc">iostat -x 1 3</span>        <span class="ln"># disk I/O (install sysstat)</span></pre>
+      </div>
+      <div class="panel panel-fix">
+        <div class="panel-header">🔧 Fix</div>
+        <pre><span class="ln"># Kill runaway process</span>
+<span class="lc">sudo kill -9 PID</span>
+<span class="ln"># Add emergency swap + persist across reboots</span>
+<span class="lc">sudo fallocate -l 2G /swapfile && echo "" && \</span>
+<span class="lc">sudo chmod 600 /swapfile && echo "" && \</span>
+<span class="lc">sudo mkswap /swapfile && echo "" && \</span>
+<span class="lc">sudo swapon /swapfile && echo "" && \</span>
+<span class="lc">echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab && echo "" && \</span>
+<span class="lc">swapon --show</span></pre>
+      </div>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 Common Performance Issues &amp; Solutions</div>
+      <pre><span class="lw">High load but low CPU usage — I/O wait</span>
+<span class="lc">  iostat -x 1 3              </span><span class="ln"># %iowait > 20% = I/O bottleneck</span>
+<span class="lc">  iotop                      </span><span class="ln"># which process is causing I/O</span>
+<span class="lc">  sudo dmesg | grep -i "i/o error"  </span><span class="ln"># disk failing?</span>
+<span class="lg">  Common causes: failing disk, full disk, runaway log writer</span>
+
+<span class="lw">Memory full, heavy swapping, system sluggish</span>
+<span class="lc">  ps aux --sort=-%mem | head -10</span>
+<span class="lc">  sudo dmesg | grep -i "oom\|killed"  </span><span class="ln"># any OOM kills?</span>
+<span class="lg">  Short term: kill memory hog. Long term: add swap or more RAM</span>
+
+<span class="lw">Single CPU core pegged at 100%</span>
+<span class="lc">  top                         </span><span class="ln"># press 1 to see per-core view</span>
+<span class="lc">  sudo strace -p PID          </span><span class="ln"># what is the process doing?</span>
+<span class="lg">  Common causes: runaway cron, loop in script, zombie chain</span>
+
+<span class="lw">System slow after update/patch</span>
+<span class="lc">  uname -r                    </span><span class="ln"># running kernel version</span>
+<span class="lc">  dpkg -l | grep linux-image  </span><span class="ln"># installed kernels</span>
+<span class="lg">  → Kernel update pending reboot — sudo reboot to apply</span></pre>
+    </div>
+  </div>
+
+  <!-- ═══ SECURITY ═══ -->
+  <div class="topic" id="security">
+    <div class="topic-header">
+      <div class="topic-icon">🔐</div>
+      <div>
+        <div class="topic-title">Security</div>
+        <div class="topic-subtitle">SSH hardening · brute force · AppArmor · suspicious processes</div>
+      </div>
+    </div>
+    <div class="panels">
+      <div class="panel panel-diagnose">
+        <div class="panel-header">🔍 Diagnose</div>
+        <pre><span class="lc">sudo lastb | head -20</span>       <span class="ln"># failed SSH attempts</span>
+<span class="lc">sudo journalctl -u sshd -xe</span>
+<span class="lc">sudo ufw status verbose</span>
+<span class="lc">sudo aa-status</span>              <span class="ln"># AppArmor status</span>
+<span class="lc">ss -antp | grep ESTABLISHED</span>
+<span class="lc">sudo who</span>                    <span class="ln"># active sessions</span></pre>
+      </div>
+      <div class="panel panel-fix">
+        <div class="panel-header">🔧 Harden SSH</div>
+        <pre><span class="lc">sudo nano /etc/ssh/sshd_config</span>
+<span class="lg">PermitRootLogin no
+PasswordAuthentication no
+PubkeyAuthentication yes
+MaxAuthTries 3</span>
+<span class="lc">sudo systemctl restart sshd</span>
+<span class="ln"># Test before closing session!</span></pre>
+      </div>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 Common Security Issues &amp; Solutions</div>
+      <pre><span class="lw">Brute force SSH attacks in logs</span>
+<span class="lc">  sudo lastb | awk '{print $3}' | sort | uniq -c | sort -rn | head -10 && echo "" && \</span>
+<span class="lc">  sudo ufw deny from ATTACKER_IP && echo "" && \</span>
+<span class="lc">  sudo apt install fail2ban && echo "" && \</span>
+<span class="lc">  sudo systemctl enable --now fail2ban</span>
+
+<span class="lw">AppArmor blocking legitimate application operations</span>
+<span class="lc">  sudo dmesg | grep apparmor | tail -20</span>
+<span class="lc">  sudo aa-logprof             </span><span class="ln"># interactive: approve legit operations</span>
+<span class="lc">  sudo aa-complain PROFILE    </span><span class="ln"># set to log-only while debugging</span>
+<span class="lg">  → After fixing profile: sudo aa-enforce PROFILE</span>
+
+<span class="lw">Suspicious process — unknown root process with network connections</span>
+<span class="lc">  sudo ps aux | grep root</span>
+<span class="lc">  sudo lsof -p SUSPICIOUS_PID</span>
+<span class="lc">  sudo ls -la /proc/SUSPICIOUS_PID/exe   </span><span class="ln"># what binary?</span>
+<span class="lc">  sudo ss -antp | grep SUSPICIOUS_PID    </span><span class="ln"># network connections?</span></pre>
+    </div>
+  </div>
+
+  <!-- ═══ SNEAKY ═══ -->
+  <div class="topic" id="sneaky">
+    <div class="topic-header">
+      <div class="topic-icon">👻</div>
+      <div>
+        <div class="topic-title">Sneaky Ones</div>
+        <div class="topic-subtitle">time sync · hostname resolution · cron · D-state processes</div>
+      </div>
+    </div>
+    <div class="panels">
+      <div class="panel panel-diagnose">
+        <div class="panel-header">🔍 Diagnose</div>
+        <pre><span class="lc">timedatectl</span>            <span class="ln"># NTP sync status + offset</span>
+<span class="lc">chronyc tracking</span>       <span class="ln"># NTP drift details</span>
+<span class="lc">hostname -f</span>            <span class="ln"># FQDN resolution</span>
+<span class="lc">cat /etc/hosts</span>         <span class="ln"># local DNS overrides</span>
+<span class="lc">ps aux | grep " Z "</span>   <span class="ln"># zombie processes</span>
+<span class="lc">sudo crontab -l</span>        <span class="ln"># root cron jobs</span></pre>
+      </div>
+      <div class="panel panel-fix">
+        <div class="panel-header">🔧 Fix</div>
+        <pre><span class="ln"># Fix NTP</span>
+<span class="lc">sudo timedatectl set-ntp true</span>
+<span class="lc">sudo systemctl restart systemd-timesyncd</span>
+<span class="ln"># Fix hostname resolution</span>
+<span class="lc">sudo nano /etc/hosts</span>
+<span class="lg">127.0.1.1  hostname.domain hostname</span>
+<span class="ln"># Zombie: kill the parent</span>
+<span class="lc">ps -o ppid= -p ZOMBIE_PID</span>
+<span class="lc">sudo kill -9 PARENT_PID</span></pre>
+      </div>
+    </div>
+    <div class="panel panel-solution">
+      <div class="panel-header">💡 Classic Sneaky Scenarios &amp; Solutions</div>
+      <pre><span class="lw">SSL certificate errors — "certificate not valid yet" or expired</span>
+<span class="lg">  → Clock drift breaks TLS handshakes — often clock is wrong, not cert</span>
+<span class="lc">  timedatectl                  </span><span class="ln"># check sync status</span>
+<span class="lc">  sudo timedatectl set-ntp true</span>
+<span class="lc">  chronyc tracking             </span><span class="ln"># offset should be under 1 second</span>
+
+<span class="lw">App can't connect to itself by hostname</span>
+<span class="lc">  hostname -f                  </span><span class="ln"># does FQDN resolve?</span>
+<span class="lc">  ping $(hostname)             </span><span class="ln"># can it ping itself?</span>
+<span class="lg">  Fix: add to /etc/hosts → 127.0.1.1 yourhostname</span>
+
+<span class="lw">Cron job not running or firing at wrong time</span>
+<span class="lc">  sudo journalctl -u cron -xe --since today</span>
+<span class="lc">  sudo crontab -l</span>                <span class="ln"># root crontab</span>
+<span class="lc">  crontab -l</span>                     <span class="ln"># current user crontab</span>
+<span class="lg">  → Cron uses system timezone — check timedatectl</span>
+<span class="lg">  → PATH in cron is minimal — always use full paths in cron scripts</span>
+
+<span class="lw">Process stuck in D state — cannot kill, system sluggish</span>
+<span class="lc">  ps aux | grep " D "</span>
+<span class="lc">  sudo dmesg | grep -i "i/o\|nfs\|hang"</span>
+<span class="lg">  → D-state = uninterruptible I/O wait — usually failing disk or hung NFS</span>
+<span class="lg">  → Cannot kill D-state processes — must fix the underlying I/O issue</span></pre>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:4px;padding:18px 22px;">
+    <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">// The Thread</div>
+    <p style="font-size:13px;color:var(--ink2);line-height:1.8;">Every problem follows the same pattern: <em>something changed</em>. History tells you what. Timestamps tell you when. Logs confirm why. Read the crime scene before touching anything — then fix the root cause, not the symptom, and make it survive a reboot.</p>
+  </div>
+
+</main>
+</div>
+
+<script>
+// Quick start cards — read command from data-cmd attribute
+document.querySelectorAll('.qs-item').forEach(card => {
+  card.addEventListener('click', () => {
+    const cmd = card.getAttribute('data-cmd');
+    if (!cmd) return;
+    navigator.clipboard.writeText(cmd).then(() => {
+      card.classList.add('copied');
+      setTimeout(() => card.classList.remove('copied'), 1800);
+    }).catch(() => {
+      // Fallback: select text if clipboard blocked
+      const range = document.createRange();
+      range.selectNodeContents(card.querySelector('.qs-cmd'));
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+    });
+  });
+});
+
+// Code block copy buttons
+function copyBlock(btn) {
+  const pre = btn.parentElement.querySelector('pre');
+  // Strip HTML tags to get plain text
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ copied';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+    btn.style.background = 'rgba(57,211,83,0.12)';
+    setTimeout(() => {
+      btn.textContent = 'copy';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+      btn.style.background = '';
+    }, 2000);
+  });
+}
+
+// Sidebar navigation
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(item.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+// Search with navigation
+let searchMatches = [];
+let currentMatchIndex = 0;
+
+function searchContent() {
+  const query = document.getElementById('search-input').value.toLowerCase();
+  const content = document.querySelector('.main');
+  const searchNav = document.getElementById('search-nav');
+  const searchCounter = document.getElementById('search-counter');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  
+  // Remove existing highlights
+  const highlighted = content.querySelectorAll('mark');
+  highlighted.forEach(mark => {
+    const parent = mark.parentNode;
+    parent.replaceChild(document.createTextNode(mark.textContent), mark);
+    parent.normalize();
+  });
+  
+  // Reset state
+  searchMatches = [];
+  currentMatchIndex = 0;
+  
+  if (!query) {
+    searchNav.classList.remove('active');
+    return;
+  }
+  
+  // Highlight matching text
+  const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
+  const nodesToHighlight = [];
+  let node;
+  
+  while (node = walker.nextNode()) {
+    if (node.nodeValue.toLowerCase().includes(query)) {
+      nodesToHighlight.push(node);
+    }
+  }
+  
+  nodesToHighlight.forEach(node => {
+    const parent = node.parentNode;
+    if (parent.tagName === 'SCRIPT' || parent.tagName === 'STYLE') return;
+    
+    const text = node.nodeValue;
+    const regex = new RegExp(`(${query})`, 'gi');
+    const parts = text.split(regex);
+    
+    const fragment = document.createDocumentFragment();
+    parts.forEach(part => {
+      if (part.toLowerCase() === query.toLowerCase()) {
+        const mark = document.createElement('mark');
+        mark.textContent = part;
+        fragment.appendChild(mark);
+        searchMatches.push(mark);
+      } else {
+        fragment.appendChild(document.createTextNode(part));
+      }
+    });
+    
+    parent.replaceChild(fragment, node);
+  });
+  
+  // Update UI
+  if (searchMatches.length > 0) {
+    searchNav.classList.add('active');
+    searchCounter.textContent = `1 of ${searchMatches.length}`;
+    prevBtn.disabled = true;
+    nextBtn.disabled = searchMatches.length === 1;
+    searchMatches[0].classList.add('current-match');
+    searchMatches[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+    searchNav.classList.remove('active');
+  }
+}
+
+function navigateSearch(direction) {
+  if (searchMatches.length === 0) return;
+  searchMatches[currentMatchIndex].classList.remove('current-match');
+  currentMatchIndex += direction;
+  if (currentMatchIndex < 0) currentMatchIndex = searchMatches.length - 1;
+  if (currentMatchIndex >= searchMatches.length) currentMatchIndex = 0;
+  const currentMatch = searchMatches[currentMatchIndex];
+  currentMatch.classList.add('current-match');
+  currentMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('search-counter').textContent = `${currentMatchIndex + 1} of ${searchMatches.length}`;
+  document.getElementById('prev-btn').disabled = false;
+  document.getElementById('next-btn').disabled = false;
+}
+
+</script>
+</body>
+</html>
