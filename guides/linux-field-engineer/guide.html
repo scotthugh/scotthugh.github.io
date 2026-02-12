@@ -18,9 +18,6 @@
     body{background:var(--bg);color:var(--ink);font-family:'Space Grotesk',sans-serif;min-height:100vh;line-height:1.6;padding-top:48px;}
     body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:100;}
     
-    /* HEADER IMAGE */
-    .header-image{width:100%;display:block;margin:0 0 32px 0;padding-left:12px;}
-    
     /* LAYOUT */
     .layout{display:flex;min-height:100vh;}
 
@@ -113,7 +110,6 @@
       .sidebar{display:none;}
       .main{padding:20px 16px;}
       .qs-grid{grid-template-columns:1fr;}
-      .header-image{margin-bottom:20px;}
     }
     
     /* SEARCH */
@@ -138,7 +134,7 @@
 
 <nav class="sidebar">
   <div class="sidebar-header">
-    <div class="prompt">root@field:~#</div>
+    <div class="prompt">root@scotthugh:~#</div>
     <h2>Field Engineer Guide</h2>
     <p>concept · diagnose · fix · persist</p>
   </div>
@@ -182,8 +178,6 @@
 </nav>
 
 <main class="main">
-  <img src="/assets/linux-cover.png" alt="Linux Field Engineer Diagnostic Guide" class="header-image">
-
   <div class="page-header">
     <div class="tag">// linux field engineer guide</div>
     <h1>Debug. <em>Fix</em>. Persist.</h1>

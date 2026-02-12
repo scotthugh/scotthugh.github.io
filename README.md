@@ -83,7 +83,7 @@ python3 -m http.server 8000
 
 - **Website:** https://scotthugh.github.io
 - **LinkedIn:** https://linkedin.com/in/scotthugh
-- **YouTube:** [@theweekendSaaSbuilder](https://youtube.com/@theweekendSaaSbuilder)
+- **YouTube:** [@scotthughpro](https://www.youtube.com/@scotthughpro)
 - **GitHub:** [@scotthugh](https://github.com/scotthugh)
 
 ---
