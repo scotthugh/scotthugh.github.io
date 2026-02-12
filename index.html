@@ -65,6 +65,25 @@
       z-index: 1;
     }
     
+    /* Banner */
+    .banner {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 32px;
+      border: 1px solid var(--border2);
+    }
+    
+    /* Profile Photo */
+    .profile-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid var(--green);
+      margin: 0 auto 24px;
+      display: block;
+      object-fit: cover;
+    }
+    
     .header {
       text-align: center;
       margin-bottom: 48px;
@@ -219,6 +238,17 @@
         padding: 0 4px;
       }
       
+      .banner {
+        border-radius: 4px;
+        margin-bottom: 24px;
+      }
+      
+      .profile-photo {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 20px;
+      }
+      
       .header {
         margin-bottom: 32px;
       }
@@ -235,6 +265,8 @@
 </head>
 <body>
   <div class="container">
+    <img src="/assets/scotthugh-banner.png" alt="Scott Hugh" class="banner">
+    <img src="/assets/scotthugh.jpeg" alt="Scott Hugh" class="profile-photo">
     <div class="header">
       <div class="prompt">root@scotthugh:~#</div>
       <h1>Scott Hugh</h1>
