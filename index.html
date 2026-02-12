@@ -1,65 +1,314 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
-    <meta name="theme-color" content="#563d7c">
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Scott Hugh - Infrastructure architect and technical leader with 25+ years building and leading technical teams. Systematic frameworks for production systems.">
+  <meta name="author" content="Scott Hugh">
+  <title>Scott Hugh - Infrastructure & Technical Leadership</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0f0e;
+      --bg2: #141716;
+      --bg3: #1c1f1d;
+      --green: #39d353;
+      --amber: #f0b429;
+      --ink: #e8ede8;
+      --ink2: #9db09d;
+      --ink3: #5c6b5c;
+      --border: #1e2820;
+      --border2: #2a332a;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Space Grotesk', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    
+    /* Subtle scanline effect */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.03) 2px,
+        rgba(0, 0, 0, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 100;
+    }
+    
+    .container {
+      max-width: 600px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    
+    .prompt {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--green);
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+    }
+    
+    h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0 0 8px 0;
+      letter-spacing: -1.5px;
+    }
+    
+    .tagline {
+      font-size: 14px;
+      color: var(--ink2);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 8px;
+    }
+    
+    .bio {
+      font-size: 13px;
+      color: var(--ink3);
+      line-height: 1.7;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    .links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 48px;
+    }
+    
+    .link {
+      display: block;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 16px 20px;
+      text-decoration: none;
+      color: var(--ink);
+      transition: all 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .link:hover {
+      border-color: var(--green);
+      background: rgba(57, 211, 83, 0.05);
+      transform: translateX(2px);
+    }
+    
+    .link-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    
+    .link-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+    
+    .link-title {
+      font-weight: 700;
+      color: var(--green);
+      font-size: 14px;
+    }
+    
+    .link-desc {
+      font-size: 12px;
+      color: var(--ink2);
+      font-family: 'JetBrains Mono', monospace;
+      padding-left: 26px;
+    }
+    
+    .link-badge {
+      display: inline-block;
+      background: rgba(57, 211, 83, 0.1);
+      color: var(--green);
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 2px 6px;
+      border-radius: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: 8px;
+    }
+    
+    .section-title {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--ink3);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin: 32px 0 12px 0;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .footer {
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--ink3);
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .footer a {
+      color: var(--green);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    
+    .footer a:hover {
+      color: var(--amber);
+    }
+    
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .social-link {
+      color: var(--ink2);
+      text-decoration: none;
+      font-size: 12px;
+      transition: color 0.15s;
+    }
+    
+    .social-link:hover {
+      color: var(--green);
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 0 4px;
       }
-
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
+      
+      .header {
+        margin-bottom: 32px;
       }
-    </style>
-
-    <link href="css/cover.css" rel="stylesheet">
-    <title>My Static GitHub Website</title>
-  </head>
-  <body class="text-center">
-    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-  <header class="masthead mb-auto">
-    <div class="inner">
-      <h3 class="masthead-brand">ScottHugh</h3>
-      <nav class="nav nav-masthead justify-content-center">
-        <a class="nav-link active" href="#">Home</a>
-        <a class="nav-link" href="https://www.linkedin.com/in/scotthugh/">Contact</a>
-      </nav>
+      
+      h1 {
+        font-size: 32px;
+      }
+      
+      .link {
+        padding: 14px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="prompt">root@scotthugh:~#</div>
+      <h1>Scott Hugh</h1>
+      <p class="tagline">Infrastructure • Architecture • Leadership</p>
+      <p class="bio">25+ years building and leading technical teams. Creating systematic frameworks that turn complexity into clarity.</p>
     </div>
-  </header>
-
-  <main role="main" class="inner cover">
-    <h1 class="cover-heading">Welcome to my Static GitHub Website.</h1>
-    <p class="lead">This is to show-off some of the possibilities on GitHub.</p>
-    <p class="lead">
-      <a href="https://www.linkedin.com/in/scotthugh/" class="btn btn-lg btn-secondary">Reach out to me</a>
-    </p>
-  </main>
-
-  <footer class="mastfoot mt-auto">
-    <div class="inner">
-      <p><a href="https://www.linkedin.com/in/scotthugh/">in/scotthugh</a></p>
+    
+    <div class="section-title">Open Source Guides</div>
+    <div class="links">
+      <a href="https://scotthugh.github.io/technical-guides/linux-field-engineer/guide.html" class="link">
+        <div class="link-header">
+          <span class="link-icon">🛠️</span>
+          <span class="link-title">Linux Field Engineer Diagnostic Guide</span>
+          <span class="link-badge">New</span>
+        </div>
+        <div class="link-desc">Systematic troubleshooting methodology for production infrastructure</div>
+      </a>
+      
+      <a href="https://github.com/scotthugh/technical-guides" class="link">
+        <div class="link-header">
+          <span class="link-icon">📚</span>
+          <span class="link-title">Technical Guides Repository</span>
+        </div>
+        <div class="link-desc">Open-source diagnostic tools and frameworks • MIT Licensed</div>
+      </a>
     </div>
-  </footer>
-</div>
-
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-  </body>
+    
+    <div class="section-title">Content & Community</div>
+    <div class="links">
+      <a href="https://youtube.com/@theweekendSaaSbuilder" class="link">
+        <div class="link-header">
+          <span class="link-icon">📺</span>
+          <span class="link-title">YouTube Channel</span>
+        </div>
+        <div class="link-desc">Weekend SaaS Builder • Technical builds and methodologies</div>
+      </a>
+      
+      <a href="https://patreon.com/scotthugh?utm_medium=github&utm_source=portfolio&utm_campaign=landing_page&utm_content=main_link" class="link">
+        <div class="link-header">
+          <span class="link-icon">🤝</span>
+          <span class="link-title">Patreon</span>
+        </div>
+        <div class="link-desc">Early access to guides • Video deep-dives • Monthly Q&A</div>
+      </a>
+    </div>
+    
+    <div class="section-title">Connect</div>
+    <div class="links">
+      <a href="https://linkedin.com/in/scotthugh" class="link">
+        <div class="link-header">
+          <span class="link-icon">💼</span>
+          <span class="link-title">LinkedIn</span>
+        </div>
+        <div class="link-desc">Professional profile and work history</div>
+      </a>
+      
+      <a href="https://github.com/scotthugh" class="link">
+        <div class="link-header">
+          <span class="link-icon">⚙️</span>
+          <span class="link-title">GitHub</span>
+        </div>
+        <div class="link-desc">Open-source projects and contributions</div>
+      </a>
+    </div>
+    
+    <div class="footer">
+      <p>Frameworks over fixes • Methodology over memorization • Enablement over heroics</p>
+      <div class="social-links">
+        <span style="color: var(--ink3);">→</span>
+        <a href="https://scotthugh.com" class="social-link">scotthugh.com</a>
+        <span style="color: var(--ink3);">•</span>
+        <a href="mailto:scott@scotthugh.com" class="social-link">contact</a>
+      </div>
+      <p style="margin-top: 16px; font-size: 10px;">Built with <span style="color: var(--green);">■</span> in Copenhagen</p>
+    </div>
+  </div>
+</body>
 </html>

@@ -1,0 +1,27 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backup files
+*.bak
+*.tmp
+.temp/
+
+# Archive directory
+archive/
+
+# Log files
+*.log
+
+# Documentation (not needed in live site)
+QUICK-START.md
+DEPLOY.md
+CUSTOMIZATION.md
