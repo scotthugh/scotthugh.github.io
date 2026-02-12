@@ -64,8 +64,8 @@ scotthugh.github.io/
 ## 🤝 Support
 
 Support ongoing framework development:
-- **[Patreon](https://patreon.com/scotthugh)** - Early access, monthly Q&A
-- **[GitHub Sponsors](https://github.com/sponsors/scotthugh)** - One-time or recurring
+- **[Ko-fi](https://ko-fi.com/scotthugh)** - One-time or monthly support
+- **[GitHub Sponsors](https://github.com/sponsors/scotthugh)** - Alternative platform
 
 ## 🔧 Local Development
 

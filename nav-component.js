@@ -52,13 +52,13 @@
         " onmouseover="this.style.color='#39d353'" onmouseout="this.style.color='#9db09d'">
           GitHub
         </a>
-        <a href="https://patreon.com/scotthugh?utm_medium=github&utm_source=site_nav&utm_campaign=global_nav" target="_blank" rel="noopener" style="
+        <a href="https://ko-fi.com/scotthugh?utm_medium=github&utm_source=site_nav&utm_campaign=global_nav" target="_blank" rel="noopener" style="
           color: #9db09d;
           text-decoration: none;
           font-size: 11px;
           transition: color 0.2s;
         " onmouseover="this.style.color='#39d353'" onmouseout="this.style.color='#9db09d'">
-          Patreon
+          Ko-fi
         </a>
       </div>
     </div>
