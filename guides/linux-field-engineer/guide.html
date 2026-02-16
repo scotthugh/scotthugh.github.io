@@ -285,19 +285,25 @@
       </div>
     </div>
     <div class="concept">
-      <div class="concept-label">The Golden Rule</div>
-      <p>Every fix follows the same five steps regardless of the problem. Skipping steps — especially <strong>Persist</strong> — is the most common mistake.</p>
+      <div class="concept-label">The Rule</div>
+      <p>Don't guess. Don't hack. Actually understand what's broken before you touch anything.</p>
       <div class="analogy">A surgeon doesn't operate before reading the patient's chart. Read history before touching anything.</div>
     </div>
     <div class="code-block">
       <button class="copy-btn" onclick="copyBlock(this)">copy</button>
-      <pre><span class="la">1. DIAGNOSE  </span>→ understand WHAT is broken and WHY
-<span class="la">2. VERIFY    </span>→ confirm your theory before touching anything
-<span class="la">3. FIX       </span>→ minimal change to resolve the root cause
-<span class="la">4. TEST      </span>→ confirm it actually works now
-<span class="la">5. PERSIST   </span>→ make the fix survive a reboot</pre>
+      <pre><span class="la">1. DIAGNOSE  </span>→ What's actually broken and why
+<span class="la">2. VERIFY    </span>→ Test your theory before changing shit
+<span class="la">3. FIX       </span>→ Change one thing
+<span class="la">4. TEST      </span>→ Make sure it actually works
+<span class="la">5. DOCUMENT  </span>→ Write down what you did</pre>
     </div>
-    <div class="callout callout-warn">⚠ Step 5 is what separates a field engineer from someone who hacks until it works. A fix that doesn't survive reboot is a time bomb.</div>
+    <div class="concept">
+      <div class="concept-label">Why This Matters</div>
+      <p><strong>DIAGNOSE is where you win or lose.</strong> Most people skip this and start changing things until something works. That's how you fix the wrong thing, break something else, and waste 3 hours on a 10-minute problem.</p>
+      <p><strong>Spend your time here:</strong> Read the actual error messages. Check the logs. Form a theory about what's broken. <em>Then</em> move forward.</p>
+      <p><strong>The math is simple:</strong> 30 min diagnosing + 5 min fixing = Done. 5 min diagnosing + 30 min guessing = Still broken.</p>
+    </div>
+    <div class="callout callout-tip">✓ <strong>What separates field engineers from hackers:</strong> Field engineers know what they're fixing before they start, make minimal changes, and understand if the fix is permanent or temporary. Hackers change stuff until it works, don't know why it works, and leave time bombs that break on reboot.</div>
   </div>
 
   <!-- ═══ HISTORY ═══ -->
